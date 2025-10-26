@@ -3,82 +3,46 @@ package racingcar;
 import camp.nextstep.edu.missionutils.Console;
 import camp.nextstep.edu.missionutils.Randoms;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Application {
     public static void main(String[] args) {
         System.out.println("경주할 자동차 이름을 입력하세요.(이름은 쉼표(,) 기준으로 구분)");
-        String cars = Console.readLine();
-        String[] carsList = cars.split(",");
-
-        carsList = concatPrintFormat(carsList);
+        String carsName = Console.readLine();
+        Map<String, String> carsList = MakeCarsList(carsName);
 
         carsList = startRacing(carsList);
 
-        System.out.println("최종 우승자 : " + getWinner(carsList));
+        String winners = getWinner(carsList);
+        System.out.println("최종 우승자 : " + winners);
     }
 
-    private static String getWinner(String[] carsList) {
-        int max = getMaxLength(carsList);
+    private static Map<String, String> MakeCarsList(String carsName) {
+        String[] cars = carsName.split(",");
 
-        int count = 0;
-        String[] winners = new String[carsList.length];
-        for (int i = 0; i < carsList.length; ++i) {
-            int length = carsList[i].length() - carsList[i].indexOf("-");
-            if (length == max) {
-                winners[count++] = carsList[i].substring(0, carsList[i].indexOf(":") - 1);
+        Map<String, String> carsList = new LinkedHashMap<>();
+        for (String car : cars) {
+            if (car.length() > 5) {
+                throw new IllegalArgumentException();
             }
+            carsList.put(car, "");
         }
-        return getRealWinners(winners, count);
+        return carsList;
     }
 
-    private static String getRealWinners(String[] winners, int count) {
-        String[] realWinner = new String[count];
-        for (int i = 0; i < count; ++i) {
-            realWinner[i] = winners[i];
-        }
-        return String.join(",", realWinner);
-    }
-
-    private static int getMaxLength(String[] carsList) {
-        int max = carsList[0].length() - carsList[0].indexOf("-");
-
-        for (int i = 1; i < carsList.length; ++i) {
-            int lenght = carsList[i].length() - carsList[i].indexOf("-");
-            if (max < lenght) {
-                max = lenght;
-            }
-        }
-        return max;
-    }
-
-    private static String[] startRacing(String[] carsList) {
+    private static Map<String, String> startRacing(Map<String, String> carsList) {
         int attemp = getAttempt();
 
         System.out.println("실행 결과");
+
         for (int i = 0; i < attemp; ++i) {
             racingResult(carsList);
             printResult(carsList);
         }
         return carsList;
-    }
-
-    private static void racingResult(String[] carsList) {
-        for (int i = 0; i < carsList.length; ++i) {
-            carsList[i] = racing(carsList[i]);
-        }
-    }
-
-    private static String racing(String s) {
-        if (Randoms.pickNumberInRange(0, 9) >= 4) {
-            s = s.concat("-");
-        }
-        return s;
-    }
-
-    private static void printResult(String[] carsList) {
-        for (String car : carsList) {
-            System.out.println(car);
-        }
-        System.out.println();
     }
 
     private static int getAttempt() {
@@ -87,11 +51,43 @@ public class Application {
         return Integer.parseInt(attemp);
     }
 
-    private static String[] concatPrintFormat(String[] carsList) {
-        for (int i = 0; i < carsList.length; ++i) {
-            carsList[i] = carsList[i].concat(" : ");
+    // 수정 @ racing 메서드 제거
+    private static void racingResult(Map<String, String> carsList) {
+        for (String car : carsList.keySet()) {
+            if (Randoms.pickNumberInRange(0, 9) >= 4) {
+                carsList.put(car, carsList.get(car) + "-");
+            }
         }
-        return carsList;
+    }
+
+    private static void printResult(Map<String, String> carsList) {
+        for (Map.Entry<String, String> entry : carsList.entrySet()) {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
+        System.out.println();
+    }
+
+    private static String getWinner(Map<String, String> carsList) {
+        int maxLength = getMaxLength(carsList);
+
+        List<String> winners = new ArrayList<>();
+        for (Map.Entry<String, String> entry : carsList.entrySet()) {
+            if (entry.getValue().length() == maxLength) {
+                winners.add(entry.getKey());
+            }
+        }
+        return String.join(",", winners);
+    }
+
+    private static int getMaxLength(Map<String, String> carsList) {
+        int max = -1;
+
+        for (String value : carsList.values()) {
+            if (max < value.length()) {
+                max = value.length();
+            }
+        }
+        return max;
     }
 
 }
