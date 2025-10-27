@@ -3,10 +3,7 @@ package racingcar;
 import camp.nextstep.edu.missionutils.Console;
 import camp.nextstep.edu.missionutils.Randoms;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Application {
     public static void main(String[] args) {
@@ -51,16 +48,14 @@ public class Application {
         checkAttempException(attemp);
         return Integer.parseInt(attemp);
     }
-    // 추가
+
     private static void checkAttempException(String attemp) {
         if (attemp == null || attemp.isBlank()) {
             throw new IllegalArgumentException();
         }
-
         if (!attemp.chars().allMatch(Character::isDigit)) {
             throw new IllegalArgumentException();
         }
-
         if (Integer.parseInt(attemp) <= 0) {
             throw new IllegalArgumentException();
         }
@@ -94,15 +89,16 @@ public class Application {
     }
 
     private static int getMaxLength(Map<String, String> carsList) {
-        int max = -1;
+        Iterator<String> car = carsList.values().iterator();
+        int max = car.next().length();
 
-        for (String value : carsList.values()) {
-            if (max < value.length()) {
-                max = value.length();
+        while (car.hasNext()) {
+            int length = car.next().length();
+            if (max < length) {
+                max = length;
             }
         }
         return max;
     }
-
 }
 //pobi,woni,jun
