@@ -48,10 +48,24 @@ public class Application {
     private static int getAttempt() {
         System.out.println("시도할 횟수는 몇 회인가요?");
         String attemp = Console.readLine();
+        checkAttempException(attemp);
         return Integer.parseInt(attemp);
     }
+    // 추가
+    private static void checkAttempException(String attemp) {
+        if (attemp == null || attemp.isBlank()) {
+            throw new IllegalArgumentException();
+        }
 
-    // 수정 @ racing 메서드 제거
+        if (!attemp.chars().allMatch(Character::isDigit)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (Integer.parseInt(attemp) <= 0) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     private static void racingResult(Map<String, String> carsList) {
         for (String car : carsList.keySet()) {
             if (Randoms.pickNumberInRange(0, 9) >= 4) {
