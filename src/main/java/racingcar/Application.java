@@ -2,7 +2,6 @@ package racingcar;
 
 import camp.nextstep.edu.missionutils.Console;
 import camp.nextstep.edu.missionutils.Randoms;
-
 import java.util.*;
 
 public class Application {
@@ -32,9 +31,7 @@ public class Application {
 
     private static Map<String, String> startRacing(Map<String, String> carsList) {
         int attemp = getAttempt();
-
         System.out.println("실행 결과");
-
         for (int i = 0; i < attemp; ++i) {
             racingResult(carsList);
             printResult(carsList);
@@ -89,16 +86,10 @@ public class Application {
     }
 
     private static int getMaxLength(Map<String, String> carsList) {
-        Iterator<String> car = carsList.values().iterator();
-        int max = car.next().length();
-
-        while (car.hasNext()) {
-            int length = car.next().length();
-            if (max < length) {
-                max = length;
-            }
-        }
-        return max;
+        return carsList.values().stream()
+                .mapToInt(String::length)
+                .max()
+                .orElseThrow(() -> new IllegalArgumentException());
     }
 }
 //pobi,woni,jun
