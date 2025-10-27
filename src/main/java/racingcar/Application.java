@@ -6,9 +6,7 @@ import java.util.*;
 
 public class Application {
     public static void main(String[] args) {
-        System.out.println("경주할 자동차 이름을 입력하세요.(이름은 쉼표(,) 기준으로 구분)");
-        String carsName = Console.readLine();
-        Map<String, String> carsList = MakeCarsList(carsName);
+        Map<String, String> carsList = getCarsList();
 
         carsList = startRacing(carsList);
 
@@ -16,17 +14,37 @@ public class Application {
         System.out.println("최종 우승자 : " + winners);
     }
 
-    private static Map<String, String> MakeCarsList(String carsName) {
+    private static Map<String,String> getCarsList() {
+        System.out.println("경주할 자동차 이름을 입력하세요.(이름은 쉼표(,) 기준으로 구분)");
+        String carsName = Console.readLine();
+
+        if (carsName == null || carsName.isBlank()) {
+            throw new IllegalArgumentException();
+        }
+        if (!carsName.contains(",")) {
+            throw new IllegalArgumentException();
+        }
+        return makeCarsList(carsName);
+    }
+
+    private static Map<String, String> makeCarsList(String carsName) {
         String[] cars = carsName.split(",");
 
         Map<String, String> carsList = new LinkedHashMap<>();
         for (String car : cars) {
-            if (car.length() > 5) {
-                throw new IllegalArgumentException();
-            }
+            checkNameException(car);
             carsList.put(car, "");
         }
         return carsList;
+    }
+    // 예외 처리 추가
+    private static void checkNameException(String car) {
+        if (car.length() > 5) {
+            throw new IllegalArgumentException();
+        }
+        if (car == null || car.isBlank()) {
+            throw new IllegalArgumentException();
+        }
     }
 
     private static Map<String, String> startRacing(Map<String, String> carsList) {
